@@ -13,10 +13,10 @@ export const SITE = {
   tagline: "Shaping Stars of Tomorrow",
   city: "Mirpur, Azad Kashmir",
   board: "BISE Mirpur",
-  phone: "0300-0000000",          // shown on the site
-  whatsapp: "923000000000",       // international format, no + or dashes
+  phone: "0311-4857362",          // shown on the site
+  whatsapp: "923114857362",       // international format, no + or dashes
   email: "info@starscollege.edu.pk",
-  address: "Main Campus, Sector F-1, Mirpur, Azad Kashmir",
+  address: "Near BISE, Kotli Road, F-1, Mirpur AJK",
   timings: "Mon–Sat, 8:00 AM – 2:00 PM",
   mapQuery: "Mirpur, Azad Kashmir",
   social: {
