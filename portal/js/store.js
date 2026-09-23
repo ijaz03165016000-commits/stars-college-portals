@@ -31,7 +31,7 @@ function fb() {
 
 /* ---------------- Demo store (localStorage) ---------------- */
 const PREFIX = "stars_portal_";
-const SEED_VERSION = "6";
+const SEED_VERSION = "7";
 const mem = {};            // fallback if storage is blocked
 function lsGet(col) {
   try { const v = localStorage.getItem(PREFIX + col); if (v) return JSON.parse(v); } catch {}

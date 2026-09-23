@@ -58,6 +58,15 @@ Students must have an active subscription before their portal opens. Parents, st
 EasyPaisa does not offer automatic confirmation for personal accounts, so approval is manual. In live mode the Firestore rules also block an unpaid student's data, so the payment screen can't be bypassed.
 Change the amount, days, account or switch the paywall off in `portal/js/school.js` → `SUBSCRIPTION`.
 
+## ID cards (student card & employee card)
+
+- **Student portal → ID card** / **Staff portal → Employee card** shows a checklist of the details the card needs, a live preview of the front and back, and an **Issue card** button that unlocks once everything is complete.
+- Students add their photo, date of birth, blood group and address; staff add photo, mobile, blood group and address. Name, class, roll no. / designation come from the college record.
+- The college office can fill in or correct any detail and issue cards from Admin (or Principal) → Students / Staff → **Card**. The tables show each card's status: Incomplete, Ready or Issued.
+- After issue, **Print / save as PDF** prints front and back at real ID-card size (54 × 86 mm). Students can't change details after issue; the office can edit and **Re-issue**.
+- Photos are cropped to passport shape and shrunk to about 20–40 KB, stored in the student/staff record (no extra storage setup needed).
+- Card validity: `portal/js/school.js` → `ID_CARD` (student cards valid to the end of the session, staff cards 2 years).
+
 ## Changing the school setup
 
 `portal/js/school.js` holds classes and subjects, monthly fees (Class 8 Rs 3,500 · Matric Rs 4,500 · Inter Rs 6,000), fee due day, late fee, period timings and the grading scale. Don't change a class `id` once students are enrolled.

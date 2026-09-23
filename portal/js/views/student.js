@@ -4,6 +4,7 @@ import { className } from "../school.js";
 import { fmtDate } from "../ui.js";
 import { studentViews, noticesView, profileView } from "./shared.js";
 import { renewBanner, subscriptionPage } from "./subscribe.js";
+import { idCardPage } from "./idcard.js";
 
 let sid, me;
 export function init(user) { me = user; sid = user.linkId || user.id; }
@@ -17,6 +18,7 @@ export const nav = [
   { id: "fees", label: "Fees", icon: "money" },
   { id: "leave", label: "Leave", icon: "leave" },
   { id: "notices", label: "Notices", icon: "bell" },
+  { id: "idcard", label: "ID card", icon: "user" },
   { id: "subscription", label: "Subscription", icon: "star" }
 ];
 
@@ -24,6 +26,7 @@ const sv = studentViews(() => sid, { header: () => (me && ["", "#/", "#/home"].i
 export const views = {
   ...sv,
   subscription: subscriptionPage,
+  idcard: idCardPage("student"),
   notices: noticesView("students"),
   profile: profileView(async () => {
     const s = await store.get("students", sid);

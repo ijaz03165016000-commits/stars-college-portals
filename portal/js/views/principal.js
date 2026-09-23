@@ -3,11 +3,13 @@ import * as store from "../store.js";
 import { CLASSES, className, SESSION } from "../school.js";
 import { $, esc, kpi, card, empty, pill, bars, ring, fmtDate, money, today } from "../ui.js";
 import { noticeList, profileView } from "./shared.js";
+import { idCardPage } from "./idcard.js";
 import { snapshot, schoolCharts, studentsView, attendanceOverview, resultsOverview, feesView, noticesManager, staffView, leaveApprovals, timetableView } from "./manage.js";
 
 let me;
 export function init(user) { me = user; }
 
+export const parentOf = { idcard: "students" };
 export const nav = [
   { id: "home", label: "Overview", icon: "home" },
   { id: "attendance", label: "Attendance", icon: "checklist" },
@@ -49,6 +51,7 @@ async function home({ el }) {
 }
 
 export const views = {
+  idcard: (ctx) => idCardPage(ctx.params.kind === "staff" ? "staff" : "student", { office: true })(ctx),
   home,
   attendance: attendanceOverview({ canMarkStaff: true }),
   results: resultsOverview({ canPublish: true }),

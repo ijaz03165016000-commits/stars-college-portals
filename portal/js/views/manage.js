@@ -6,6 +6,7 @@ import {
   fmtDate, fmtMonth, dayBox, money, pct, today, attendanceStats, examResult, classPositions, feeState, gradePill
 } from "../ui.js";
 import { timetableGrid, showChallan } from "./shared.js";
+import { cardStatus } from "./idcard.js";
 
 const plusIcon = icon("plus").replace("<svg", '<svg width="18" height="18" fill="currentColor"');
 const classOpts = (sel, withAll = true) => (withAll ? `<option value="">All classes</option>` : "") + options(CLASSES.map((c) => [c.id, c.name]), sel);
@@ -64,9 +65,9 @@ export function studentsView({ canEdit }) {
       <span class="toolbar__spacer"></span>
       ${canEdit ? `<button class="btn btn--gold btn--sm" id="addS">${plusIcon} Add student</button>` : ""}
     </div>
-    ${card(`${list.length} student${list.length === 1 ? "" : "s"}${cls ? " in " + className(cls) : ""}`, list.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Class</th><th>Roll</th><th>Father</th><th>Phone</th><th>Status</th><th></th></tr></thead><tbody>
-      ${list.slice(0, 300).map((s) => `<tr><td>${person(s.name, s.id)}</td><td class="nowrap">${esc(className(s.classId))}</td><td>${s.rollNo}</td><td>${esc(s.fatherName)}</td><td class="nowrap">${esc(s.phone)}</td><td>${s.status === "left" ? pill("Left", "grey") : pill("Active", "green")}</td>
-        <td class="nowrap"><button class="linkbtn" data-view="${esc(s.id)}">View</button>${canEdit ? ` · <button class="linkbtn" data-edit="${esc(s.id)}">Edit</button>` : ""}</td></tr>`).join("")}
+    ${card(`${list.length} student${list.length === 1 ? "" : "s"}${cls ? " in " + className(cls) : ""}`, list.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Student</th><th>Class</th><th>Roll</th><th>Father</th><th>Phone</th><th>Status</th><th>ID card</th><th></th></tr></thead><tbody>
+      ${list.slice(0, 300).map((s) => `<tr><td>${person(s.name, s.id)}</td><td class="nowrap">${esc(className(s.classId))}</td><td>${s.rollNo}</td><td>${esc(s.fatherName)}</td><td class="nowrap">${esc(s.phone)}</td><td>${s.status === "left" ? pill("Left", "grey") : pill("Active", "green")}</td><td>${cardStatus("student", s)}</td>
+        <td class="nowrap"><button class="linkbtn" data-view="${esc(s.id)}">View</button>${canEdit ? ` · <button class="linkbtn" data-edit="${esc(s.id)}">Edit</button>` : ""} · <a href="#/idcard?kind=student&id=${encodeURIComponent(s.id)}">Card</a></td></tr>`).join("")}
     </tbody></table></div>` : empty("No students match", "search"))}`;
     let t; $("#sq").oninput = (e) => { clearTimeout(t); t = setTimeout(() => (location.hash = hashWith("students", { q: e.target.value, c: $("#sc").value })), 350); };
     $("#sc").onchange = (e) => (location.hash = hashWith("students", { q: $("#sq").value, c: e.target.value }));
@@ -350,8 +351,8 @@ export function staffView({ canEdit }) {
     staff.sort((a, b) => a.id.localeCompare(b.id));
     const rec = sAtt?.records || {};
     el.innerHTML = `${canEdit ? `<div class="toolbar"><span class="toolbar__spacer"></span><button class="btn btn--gold btn--sm" id="addT">${plusIcon} Add staff member</button></div>` : ""}
-    ${card(`${staff.length} staff members`, `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Subjects</th><th>Class teacher</th><th>Phone</th><th>Today</th>${canEdit ? "<th></th>" : ""}</tr></thead><tbody>
-      ${staff.map((t) => `<tr><td>${person(t.name, `${t.id} · ${t.designation}`)}</td><td>${esc(t.subjects.join(", "))}</td><td class="nowrap">${t.classTeacherOf ? esc(className(t.classTeacherOf)) : "—"}</td><td class="nowrap"><a href="tel:${esc(t.phone)}">${esc(t.phone)}</a></td><td>${rec[t.id] ? statusPill(rec[t.id]) : pill("—", "grey")}</td>${canEdit ? `<td><button class="linkbtn" data-ed="${esc(t.id)}">Edit</button></td>` : ""}</tr>`).join("")}
+    ${card(`${staff.length} staff members`, `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Subjects</th><th>Class teacher</th><th>Phone</th><th>Today</th><th>ID card</th><th></th></tr></thead><tbody>
+      ${staff.map((t) => `<tr><td>${person(t.name, `${t.id} · ${t.designation}`)}</td><td>${esc(t.subjects.join(", "))}</td><td class="nowrap">${t.classTeacherOf ? esc(className(t.classTeacherOf)) : "—"}</td><td class="nowrap"><a href="tel:${esc(t.phone)}">${esc(t.phone)}</a></td><td>${rec[t.id] ? statusPill(rec[t.id]) : pill("—", "grey")}</td><td>${cardStatus("staff", t)}</td><td class="nowrap">${canEdit ? `<button class="linkbtn" data-ed="${esc(t.id)}">Edit</button> · ` : ""}<a href="#/idcard?kind=staff&id=${encodeURIComponent(t.id)}">Card</a></td></tr>`).join("")}
     </tbody></table></div>`)}`;
     if (!canEdit) return;
     const reload = () => staffList({ el });

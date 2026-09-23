@@ -77,3 +77,12 @@ export const SUBSCRIPTION = {
   title: "Muhammad Ijaz",
   remindDays: 5              // show a renewal reminder this many days before expiry
 };
+
+/* ==========================================================
+   ID cards (student card / employee card)
+   ========================================================== */
+export const ID_CARD = {
+  studentValidUntil: "2027-03-31",   // end of session 2026–27
+  staffValidYears: 2,                // employee card valid this many years from issue
+  bloodGroups: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+};

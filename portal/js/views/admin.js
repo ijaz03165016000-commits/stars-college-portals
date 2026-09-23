@@ -4,11 +4,13 @@ import { CLASSES, className, shortName, ROLES } from "../school.js";
 import { $, $$, esc, icon, kpi, card, empty, pill, person, bars, toast, dialog, field, options, armed, money, fmtDate, today } from "../ui.js";
 import { profileView } from "./shared.js";
 import { subscriptionsAdmin, pendingCount } from "./subscribe.js";
+import { idCardPage } from "./idcard.js";
 import { snapshot, schoolCharts, studentsView, attendanceOverview, resultsOverview, feesView, noticesManager, staffView, timetableView } from "./manage.js";
 
 let me;
 export function init(user) { me = user; }
 
+export const parentOf = { idcard: "students" };
 export const nav = [
   { id: "home", label: "Dashboard", icon: "home" },
   { label: "People" },
@@ -109,6 +111,7 @@ async function settings({ el }) {
 }
 
 export const views = {
+  idcard: (ctx) => idCardPage(ctx.params.kind === "staff" ? "staff" : "student", { office: true })(ctx),
   home, accounts, settings,
   students: studentsView({ canEdit: true }),
   staff: staffView({ canEdit: true }),

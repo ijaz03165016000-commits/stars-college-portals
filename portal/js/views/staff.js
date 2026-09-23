@@ -5,6 +5,7 @@ import {
   $, $$, esc, icon, kpi, card, empty, pill, person, statusPill, bars, toast, dialog, field, options, armed,
   fmtDate, dayBox, today, dayName, attendanceStats, examResult, pct
 } from "../ui.js";
+import { idCardPage } from "./idcard.js";
 import { timetableGrid, todayList, noticesView, noticeList, noticesFor, profileView, messagesView, unreadCount, currentPeriod } from "./shared.js";
 
 let me, myId, myClasses = [];
@@ -26,7 +27,8 @@ export const nav = [
   { id: "students", label: "My students", icon: "users" },
   { id: "leaves", label: "Leave", icon: "leave" },
   { id: "messages", label: "Parent messages", icon: "chat" },
-  { id: "notices", label: "Notices", icon: "bell" }
+  { id: "notices", label: "Notices", icon: "bell" },
+  { id: "idcard", label: "Employee card", icon: "user" }
 ];
 
 /* subjects this teacher teaches in a class */
@@ -304,6 +306,7 @@ async function leaves({ el, user }) {
 
 export const views = {
   home, attendance, marks, homework, timetable, students, leaves,
+  idcard: idCardPage("staff"),
   messages: messagesView({ side: "staff" }),
   notices: noticesView("staff"),
   profile: profileView(async () => [["Staff ID", myId], ["Designation", me.designation], ["Subjects", me.subjects.join(", ")], ["Class teacher of", className(me.classTeacherOf)], ["Qualification", me.qualification], ["Phone", me.phone], ["Email", me.email], ["Joined", fmtDate(me.joinDate)]])

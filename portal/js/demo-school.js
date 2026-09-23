@@ -63,7 +63,8 @@ export function buildDemoSchool() {
     staff[t.id] = {
       name: t.name, designation: t.designation, subjects: t.subjects, classIds, classTeacherOf: t.classTeacherOf,
       phone: `0345-${String(5100000 + i * 13791).slice(0, 7)}`, email: `${t.id.toLowerCase()}@starscollege.edu.pk`,
-      joinDate: `20${String(12 + (i % 11)).padStart(2, "0")}-0${1 + (i % 8)}-01`, qualification: t.designation.includes("Senior") ? "M.Phil" : "M.Sc / M.A", gender: t.gender
+      joinDate: `20${String(12 + (i % 11)).padStart(2, "0")}-0${1 + (i % 8)}-01`, qualification: t.designation.includes("Senior") ? "M.Phil" : "M.Sc / M.A", gender: t.gender,
+      bloodGroup: ["B+", "O+", "A+", "AB+"][i % 4], address: `${AREAS[i % AREAS.length]}, Mirpur AJK`
     };
     users[t.id] = { role: "staff", name: t.name, loginId: t.id, linkId: t.id, password: PW };
   });
@@ -92,7 +93,7 @@ export function buildDemoSchool() {
         classId: c.id, rollNo: n, fatherName: father, phone: `03${between(0, 4)}${between(0, 9)}-${between(1000000, 9999999)}`,
         dob: `${yearBorn}-${String(between(1, 12)).padStart(2, "0")}-${String(between(1, 28)).padStart(2, "0")}`,
         address: `${pick(AREAS)}, Mirpur AJK`, admissionDate: c.level === 8 || c.level === 9 || c.level === 11 ? "2026-04-01" : "2025-04-01",
-        status: "active"
+        status: "active", bloodGroup: pick(["A+", "B+", "O+", "AB+", "A-", "B+", "O+", "O-"])
       };
       users[id] = { role: "student", name: students[id].name, loginId: id, linkId: id, classId: c.id, password: PW, ...subUntil(R() < 0.85 ? between(3, 28) : -between(1, 20)) };
     }
@@ -104,6 +105,7 @@ export function buildDemoSchool() {
   students[kidB].name = "Ayesha Aslam"; students[kidB].gender = "F"; students[kidB].fatherName = "Muhammad Aslam";
   students[kidA].phone = students[kidB].phone = "0300-1234567";
   users[kidA].name = students[kidA].name; users[kidB].name = students[kidB].name;
+  delete students[kidA].bloodGroup;   // demo: this student still has details to fill in for the ID card
   delete users[kidA].subscribedUntil; delete users[kidA].subscribedUntilMs;   // demo student sees the payment screen
   Object.assign(users[kidB], subUntil(3));                                     // …and this one gets a renewal reminder
 

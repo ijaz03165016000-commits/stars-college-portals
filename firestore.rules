@@ -55,13 +55,21 @@ service cloud.firestore {
     }
 
     /* ---------------- School records ---------------- */
+    // ID-card details a student / staff member may fill in themselves (photo is a small JPEG stored in the record)
+    function cardSelfEdit(keys) {
+      return onlyChanges(keys) && request.resource.data.get('photo', '').size() < 300000;
+    }
     match /students/{sid} {
       allow read: if canSeeStudent(sid);
-      allow write: if isAdmin();
+      allow write: if isOffice() && (isAdmin() || cardSelfEdit(['photo', 'dob', 'bloodGroup', 'address', 'phone', 'cardNo', 'cardIssuedAt', 'cardValidUntil']));
+      allow update: if isStudent(sid) && resource.data.get('cardIssuedAt', '') == ''
+                    && cardSelfEdit(['photo', 'dob', 'bloodGroup', 'address', 'cardNo', 'cardIssuedAt', 'cardValidUntil']);
     }
     match /staff/{id} {
       allow read: if hasProfile();
-      allow write: if isAdmin();
+      allow write: if isOffice() && (isAdmin() || cardSelfEdit(['photo', 'bloodGroup', 'address', 'phone', 'joinDate', 'cardNo', 'cardIssuedAt', 'cardValidUntil']));
+      allow update: if isStaff() && me().linkId == id && resource.data.get('cardIssuedAt', '') == ''
+                    && cardSelfEdit(['photo', 'bloodGroup', 'address', 'phone', 'cardNo', 'cardIssuedAt', 'cardValidUntil']);
     }
     match /timetable/{classId} {
       allow read: if hasProfile();
