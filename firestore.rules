@@ -20,11 +20,13 @@ service cloud.firestore {
     function isStaff() { return role() == 'staff'; }
     function isTeam() { return isStaff() || isOffice(); }
 
-    function isStudent(sid) { return role() == 'student' && me().linkId == sid; }
+    // students need an approved subscription (subscribedUntilMs is set by the admin when a payment is approved)
+    function paid() { return me().get('subscribedUntilMs', 0) > request.time.toMillis(); }
+    function isStudent(sid) { return role() == 'student' && me().linkId == sid && paid(); }
     function isParentOf(sid) { return role() == 'parent' && sid in me().get('children', []); }
     function canSeeStudent(sid) { return isTeam() || isStudent(sid) || isParentOf(sid); }
     function inClass(cid) {
-      return (role() == 'student' && me().classId == cid)
+      return (role() == 'student' && me().classId == cid && paid())
           || (role() == 'parent' && cid in me().get('childClassIds', []));
     }
     function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
@@ -103,6 +105,15 @@ service cloud.firestore {
     match /notices/{id} {
       allow read: if hasProfile();
       allow write: if isOffice();
+    }
+    match /subscriptions/{id} {
+      // a student submits a payment for verification; the document ID is the TID, so a TID can only be used once
+      allow create: if role() == 'student'
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.status == 'pending'
+                    && !exists(/databases/$(database)/documents/subscriptions/$(id));
+      allow read: if isAdmin() || (role() == 'student' && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
     match /messages/{id} {
       function isParty(d) {

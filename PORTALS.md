@@ -18,7 +18,8 @@ Until Firebase is connected, the portals run on a sample school (112 students, 1
 
 | Role | Demo ID |
 |---|---|
-| Student | `STR-9B-01` |
+| Student — not subscribed yet (sees the payment screen) | `STR-9B-01` |
+| Student — subscribed (renewal reminder) | `STR-12PM-02` |
 | Parent (two children) | `P-ASLAM` |
 | Staff | `T01` |
 | Principal | `principal` |
@@ -43,6 +44,19 @@ Until Firebase is connected, the portals run on a sample school (112 students, 1
 8. Fees: Admin → *Fees* → *Generate challans* each month.
 
 Password resets in live mode are done in Firebase console → Authentication (the portal explains the steps).
+
+## Student subscription (Rs. 200 / month, EasyPaisa)
+
+Students must have an active subscription before their portal opens. Parents, staff, principal and admin are not affected.
+
+1. The student signs in and sees the payment screen: Rs. 200 to EasyPaisa **0344-0807888 (Muhammad Ijaz)**.
+2. They pay in the EasyPaisa app and enter the **Transaction ID (TID)** and the number they paid from. Each TID can be used only once.
+3. Admin portal → **Portal subscriptions** lists payments waiting for verification (the menu shows a count). Check the TID in your EasyPaisa app, then **Approve** (30 days of access, added after any time left) or **Reject** with a reason the student sees.
+4. Five days before expiry the student sees a renewal reminder; after expiry the payment screen comes back.
+5. Cash or free (scholarship) access: **Record cash / manual payment**.
+
+EasyPaisa does not offer automatic confirmation for personal accounts, so approval is manual. In live mode the Firestore rules also block an unpaid student's data, so the payment screen can't be bypassed.
+Change the amount, days, account or switch the paywall off in `portal/js/school.js` → `SUBSCRIPTION`.
 
 ## Changing the school setup
 
