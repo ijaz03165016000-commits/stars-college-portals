@@ -3,6 +3,7 @@ import * as store from "../store.js";
 import { CLASSES, className, shortName, ROLES } from "../school.js";
 import { $, $$, esc, icon, kpi, card, empty, pill, person, bars, toast, dialog, field, options, armed, money, fmtDate, today } from "../ui.js";
 import { profileView } from "./shared.js";
+import { subscriptionsAdmin, pendingCount } from "./subscribe.js";
 import { snapshot, schoolCharts, studentsView, attendanceOverview, resultsOverview, feesView, noticesManager, staffView, timetableView } from "./manage.js";
 
 let me;
@@ -15,6 +16,7 @@ export const nav = [
   { id: "staff", label: "Staff", icon: "teacher" },
   { id: "accounts", label: "Logins & passwords", icon: "shield" },
   { label: "College" },
+  { id: "subscriptions", label: "Portal subscriptions", icon: "star" },
   { id: "fees", label: "Fees", icon: "money" },
   { id: "attendance", label: "Attendance", icon: "checklist" },
   { id: "results", label: "Results", icon: "chart" },
@@ -115,5 +117,8 @@ export const views = {
   results: resultsOverview({ canPublish: false }),
   timetable: timetableView({ canEdit: true }),
   notices: noticesManager("College Office"),
+  subscriptions: (ctx) => subscriptionsAdmin(me.name)(ctx),
   profile: profileView(async (u) => [["Login ID", u.loginId], ["Role", "Admin"]])
 };
+
+export async function counts() { return { subscriptions: await pendingCount() }; }

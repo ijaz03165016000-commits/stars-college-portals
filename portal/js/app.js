@@ -67,8 +67,14 @@ async function route() {
 async function start() {
   try { user = await store.currentUser(); } catch (e) { user = null; }
   if (!user || !MODULES[user.role]) { location.replace("index.html"); return; }
-  mod = await MODULES[user.role]();
-  if (mod.init) await mod.init(user);
+  const sub = await import("./views/subscribe.js");
+  if (sub.needsSubscription(user)) {
+    // No active subscription: the student sees only the payment screen
+    mod = { nav: [{ id: "home", label: "Activate portal", icon: "star" }], views: { home: sub.paywall } };
+  } else {
+    mod = await MODULES[user.role]();
+    if (mod.init) await mod.init(user);
+  }
 
   $("#side-role").textContent = ROLES[user.role].home;
   $("#me").innerHTML = `<span class="me__text"><b>${esc(user.name)}</b><span>${esc(ROLES[user.role].label)}${user.loginId ? " · " + esc(user.loginId) : ""}</span></span>${avatar(user.name, user.role === "principal" || user.role === "admin" ? "avatar--gold" : "")}`;

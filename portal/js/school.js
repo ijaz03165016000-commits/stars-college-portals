@@ -62,3 +62,18 @@ export const ROLES = {
   principal: { label: "Principal", home: "Principal's office" },
   admin:     { label: "Admin",     home: "Admin portal" }
 };
+
+/* ==========================================================
+   Student portal subscription (paid access)
+   Students must have an approved payment before the portal opens.
+   Set enabled: false to switch the paywall off.
+   ========================================================== */
+export const SUBSCRIPTION = {
+  enabled: true,
+  amount: 200,               // Rs. per period
+  days: 30,                  // access given per approved payment
+  method: "EasyPaisa",
+  account: "0344-0807888",
+  title: "Muhammad Ijaz",
+  remindDays: 5              // show a renewal reminder this many days before expiry
+};

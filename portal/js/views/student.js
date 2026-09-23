@@ -3,9 +3,10 @@ import * as store from "../store.js";
 import { className } from "../school.js";
 import { fmtDate } from "../ui.js";
 import { studentViews, noticesView, profileView } from "./shared.js";
+import { renewBanner, subscriptionPage } from "./subscribe.js";
 
-let sid;
-export function init(user) { sid = user.linkId || user.id; }
+let sid, me;
+export function init(user) { me = user; sid = user.linkId || user.id; }
 
 export const nav = [
   { id: "home", label: "Dashboard", icon: "home" },
@@ -15,12 +16,14 @@ export const nav = [
   { id: "homework", label: "Homework", icon: "book" },
   { id: "fees", label: "Fees", icon: "money" },
   { id: "leave", label: "Leave", icon: "leave" },
-  { id: "notices", label: "Notices", icon: "bell" }
+  { id: "notices", label: "Notices", icon: "bell" },
+  { id: "subscription", label: "Subscription", icon: "star" }
 ];
 
-const sv = studentViews(() => sid);
+const sv = studentViews(() => sid, { header: () => (me && ["", "#/", "#/home"].includes(location.hash.split("?")[0]) ? renewBanner(me) : "") });
 export const views = {
   ...sv,
+  subscription: subscriptionPage,
   notices: noticesView("students"),
   profile: profileView(async () => {
     const s = await store.get("students", sid);

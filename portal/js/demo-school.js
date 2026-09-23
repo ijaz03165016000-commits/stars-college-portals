@@ -68,6 +68,9 @@ export function buildDemoSchool() {
     users[t.id] = { role: "staff", name: t.name, loginId: t.id, linkId: t.id, password: PW };
   });
 
+  /* subscription: positive = days of access left, negative = expired that many days ago */
+  const subUntil = (daysLeft) => { const d = addDays(now, daysLeft); return { subscribedUntil: iso(d), subscribedUntilMs: new Date(iso(d) + "T23:59:59").getTime() }; };
+
   /* ---- Students & parents ---- */
   let fi = 0;
   const used = {};
@@ -91,7 +94,7 @@ export function buildDemoSchool() {
         address: `${pick(AREAS)}, Mirpur AJK`, admissionDate: c.level === 8 || c.level === 9 || c.level === 11 ? "2026-04-01" : "2025-04-01",
         status: "active"
       };
-      users[id] = { role: "student", name: students[id].name, loginId: id, linkId: id, classId: c.id, password: PW };
+      users[id] = { role: "student", name: students[id].name, loginId: id, linkId: id, classId: c.id, password: PW, ...subUntil(R() < 0.85 ? between(3, 28) : -between(1, 20)) };
     }
   });
 
@@ -101,6 +104,8 @@ export function buildDemoSchool() {
   students[kidB].name = "Ayesha Aslam"; students[kidB].gender = "F"; students[kidB].fatherName = "Muhammad Aslam";
   students[kidA].phone = students[kidB].phone = "0300-1234567";
   users[kidA].name = students[kidA].name; users[kidB].name = students[kidB].name;
+  delete users[kidA].subscribedUntil; delete users[kidA].subscribedUntilMs;   // demo student sees the payment screen
+  Object.assign(users[kidB], subUntil(3));                                     // …and this one gets a renewal reminder
 
   const families = {};
   Object.entries(students).forEach(([sid, s]) => {
@@ -235,5 +240,21 @@ export function buildDemoSchool() {
   messages.m2 = { parentId: "P-ASLAM", staffId: "T06", studentId: kidA, from: "staff", text: "Wa Alaikum Assalam. Yes — I'll give him a weekly worksheet on Mondays. Please check he completes it at home.", at: at(-2, 10), read: true };
   messages.m3 = { parentId: "P-ASLAM", staffId: "T01", studentId: kidB, from: "parent", text: "Ayesha missed the Physics practical on Tuesday due to illness. Can she do it next week?", at: at(-1, 20), read: false };
 
-  return { users, students, staff, timetable, attendance, staffAttendance, exams, homework, fees, leaves, notices, messages };
+  /* ---- Subscription payments ---- */
+  const subscriptions = {};
+  let tid = 41823900417;
+  Object.entries(users).filter(([, u]) => u.role === "student").forEach(([uid, u]) => {
+    if (u.subscribedUntil) {
+      const approved = addDays(new Date(u.subscribedUntil + "T12:00"), -29);
+      tid += 7919;
+      subscriptions["TID-" + tid] = { userId: uid, studentId: uid, name: u.name, classId: u.classId, amount: 200, method: "EasyPaisa", tid: String(tid), sender: `03${between(0, 4)}${between(0, 9)}${between(1000000, 9999999)}`, submittedAt: iso(approved), status: "approved", decidedAt: iso(approved), validFrom: iso(approved), validUntil: u.subscribedUntil };
+    }
+  });
+  ["STR-10C-03", "STR-11PM-05", "STR-12CS-06"].forEach((sid, k) => {
+    const u = users[sid]; if (!u) return;
+    tid += 104729;
+    subscriptions["TID-" + tid] = { userId: sid, studentId: sid, name: u.name, classId: u.classId, amount: 200, method: "EasyPaisa", tid: String(tid), sender: `034${k}${between(1000000, 9999999)}`, submittedAt: iso(addDays(now, -k)), status: "pending" };
+  });
+
+  return { users, students, staff, timetable, attendance, staffAttendance, exams, homework, fees, leaves, notices, messages, subscriptions };
 }
