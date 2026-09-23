@@ -1,0 +1,119 @@
+rules_version = '2';
+
+// STARs College — Firestore security rules for the website AND the portals.
+// Publish in Firebase console → Firestore Database → Rules (paste this file), or `firebase deploy --only firestore:rules`.
+//
+// Every signed-in person has a users/{uid} document with a role:
+// student | parent | staff | principal | admin.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function hasProfile() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function role() { return hasProfile() && me().get('disabled', false) != true ? me().role : 'none'; }
+
+    function isAdmin() { return role() == 'admin'; }
+    function isPrincipal() { return role() == 'principal'; }
+    function isOffice() { return isAdmin() || isPrincipal(); }
+    function isStaff() { return role() == 'staff'; }
+    function isTeam() { return isStaff() || isOffice(); }
+
+    function isStudent(sid) { return role() == 'student' && me().linkId == sid; }
+    function isParentOf(sid) { return role() == 'parent' && sid in me().get('children', []); }
+    function canSeeStudent(sid) { return isTeam() || isStudent(sid) || isParentOf(sid); }
+    function inClass(cid) {
+      return (role() == 'student' && me().classId == cid)
+          || (role() == 'parent' && cid in me().get('childClassIds', []));
+    }
+    function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    /* ---------------- Public website ---------------- */
+    match /articles/{id} {
+      allow read: if resource.data.status == 'published' || isOffice();
+      allow write: if isOffice();
+    }
+    match /announcements/{id} {
+      allow read: if true;
+      allow write: if isOffice();
+    }
+    match /inquiries/{id} {
+      // anyone can send an admission/contact inquiry; only the office can read it
+      allow create: if request.resource.data.contacted == false && request.resource.data.keys().size() <= 20;
+      allow read, update, delete: if isOffice();
+    }
+
+    /* ---------------- Portal accounts ---------------- */
+    match /users/{uid} {
+      allow read: if (signedIn() && request.auth.uid == uid) || isOffice()
+                  || (isStaff() && resource.data.role == 'parent');
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    /* ---------------- School records ---------------- */
+    match /students/{sid} {
+      allow read: if canSeeStudent(sid);
+      allow write: if isAdmin();
+    }
+    match /staff/{id} {
+      allow read: if hasProfile();
+      allow write: if isAdmin();
+    }
+    match /timetable/{classId} {
+      allow read: if hasProfile();
+      allow write: if isAdmin();
+    }
+    match /attendance/{id} {
+      allow read: if isTeam() || inClass(resource.data.classId);
+      allow write: if isTeam();
+    }
+    match /staffAttendance/{date} {
+      allow read: if isTeam();
+      allow write: if isOffice();
+    }
+    match /exams/{id} {
+      allow read: if isTeam() || (resource.data.published == true && inClass(resource.data.classId));
+      allow create: if isTeam() && request.resource.data.published == false;
+      // teachers may enter marks only while a result is unpublished; only the principal/admin publish
+      allow update: if isOffice()
+                    || (isStaff() && resource.data.published == false && onlyChanges(['subjects']));
+      allow delete: if isOffice();
+    }
+    match /homework/{id} {
+      allow read: if isTeam() || inClass(resource.data.classId);
+      allow create: if isOffice() || (isStaff() && request.resource.data.teacherId == me().linkId);
+      allow update, delete: if isOffice() || (isStaff() && resource.data.teacherId == me().linkId);
+    }
+    match /fees/{id} {
+      allow read: if isOffice() || isStudent(resource.data.studentId) || isParentOf(resource.data.studentId);
+      allow write: if isAdmin();
+    }
+    match /leaves/{id} {
+      allow read: if isTeam() || isStudent(resource.data.personId) || isParentOf(resource.data.personId);
+      allow create: if request.resource.data.status == 'pending' && (
+                       isStudent(request.resource.data.personId)
+                    || isParentOf(request.resource.data.personId)
+                    || (isStaff() && request.resource.data.personId == me().linkId));
+      // class teachers decide student leave; the principal decides staff leave
+      allow update: if isOffice() || (isStaff() && resource.data.kind == 'student' && onlyChanges(['status', 'decidedBy']));
+      allow delete: if isAdmin();
+    }
+    match /notices/{id} {
+      allow read: if hasProfile();
+      allow write: if isOffice();
+    }
+    match /messages/{id} {
+      function isParty(d) {
+        return (role() == 'parent' && d.parentId == request.auth.uid)
+            || (isStaff() && d.staffId == me().linkId);
+      }
+      allow read: if isParty(resource.data);
+      allow create: if isParty(request.resource.data)
+                    && ((role() == 'parent' && request.resource.data.from == 'parent') || (isStaff() && request.resource.data.from == 'staff'))
+                    && request.resource.data.text is string && request.resource.data.text.size() <= 1000;
+      allow update: if isParty(resource.data) && onlyChanges(['read']);
+    }
+  }
+}
