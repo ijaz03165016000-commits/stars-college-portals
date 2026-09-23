@@ -27,12 +27,12 @@ export const SITE = {
 };
 
 export const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA8JJGbCxIMQhtQMW0dJteqckNrI9fdzWs",
+  authDomain: "stars-college-77fe9.firebaseapp.com",
+  projectId: "stars-college-77fe9",
+  storageBucket: "stars-college-77fe9.firebasestorage.app",
+  messagingSenderId: "258893611281",
+  appId: "1:258893611281:web:7a43b049e19cbd07828cb0"
 };
 
 /* Article and announcement categories (used by the site and the admin panel) */
