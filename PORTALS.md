@@ -66,6 +66,9 @@ Change the amount, days, account or switch the paywall off in `portal/js/school.
 - After issue, **Print / save as PDF** prints front and back at real ID-card size (54 × 86 mm). Students can't change details after issue; the office can edit and **Re-issue**.
 - Photos are cropped to passport shape and shrunk to about 20–40 KB, stored in the student/staff record (no extra storage setup needed).
 - Card validity: `portal/js/school.js` → `ID_CARD` (student cards valid to the end of the session, staff cards 2 years).
+- **No principal's signature — QR verification instead.** The back of every issued card carries a QR code. Anyone (a guard, a board exam centre, another school) scans it with a phone camera and `verify.html` on the college website shows **Valid / Expired / Cancelled / Not found** with the holder's photo, name, class or designation and validity. Each card gets a random 12-character code, so cards can't be looked up by guessing IDs.
+- **Re-issue** gives the card a new QR code and marks the old one **Cancelled** — so a lost or replaced card stops verifying. Cards issued before this feature show "Re-issue to add QR code" on the back; re-issue them from Admin → Students / Staff → Card.
+- Remember to re-publish `firestore.rules` after updating (it adds the public, read-one-only `cardVerify` collection).
 
 ## Changing the school setup
 
