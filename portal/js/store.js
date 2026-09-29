@@ -8,7 +8,27 @@
 
 import { FIREBASE_CONFIG } from "../../assets/js/config.js";
 
-export const IS_LIVE = !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("YOUR_");
+export const HAS_FIREBASE = !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("YOUR_");
+
+/* Demo school on a live site: open /portal/?demo=1 to explore every portal with the
+   sample school (kept in this browser only — nothing touches Firebase).
+   /portal/?demo=0 or "Exit demo" goes back to the real portals. */
+const DEMO_FLAG = "stars_demo_mode";
+function demoForced() {
+  let on = false;
+  try {
+    const q = new URLSearchParams(location.search).get("demo");
+    if (q === "1") localStorage.setItem(DEMO_FLAG, "1");
+    if (q === "0") localStorage.removeItem(DEMO_FLAG);
+    on = localStorage.getItem(DEMO_FLAG) === "1";
+  } catch {}
+  return on;
+}
+export const DEMO_FORCED = HAS_FIREBASE && demoForced();
+export const IS_LIVE = HAS_FIREBASE && !DEMO_FORCED;
+export function exitDemo() {
+  try { localStorage.removeItem(DEMO_FLAG); sessionStorage.removeItem("stars_portal_session"); } catch {}
+}
 export const DEMO_PASSWORD = "demo123";
 
 /* Students and staff sign in with an ID (e.g. STR-9B-01). In live mode the ID
@@ -31,7 +51,7 @@ function fb() {
 
 /* ---------------- Demo store (localStorage) ---------------- */
 const PREFIX = "stars_portal_";
-const SEED_VERSION = "7";
+const SEED_VERSION = "8";
 const mem = {};            // fallback if storage is blocked
 function lsGet(col) {
   try { const v = localStorage.getItem(PREFIX + col); if (v) return JSON.parse(v); } catch {}

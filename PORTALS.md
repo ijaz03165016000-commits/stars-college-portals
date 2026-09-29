@@ -12,20 +12,33 @@ Five portals share one sign-in page at **`/portal/`**:
 
 Built by Ijaz Software House · www.ijazs.online
 
-## Try it now (demo mode)
+## Demo school (for showing every feature)
 
-Until Firebase is connected, the portals run on a sample school (112 students, 13 teachers) saved in the visitor's browser. Every portal's sign-in box shows a demo login; the password is always `demo123`.
+The portals include a sample school: **124 students (Class 8–12), 116 parent logins, 20 teachers**, the principal and the office — with 30 days of attendance, three exams, three months of fees, homework, leave requests, messages, EasyPaisa subscriptions and issued ID cards. Password for every demo login: **`demo123`**.
 
-| Role | Demo ID |
-|---|---|
-| Student — not subscribed yet (sees the payment screen) | `STR-9B-01` |
-| Student — subscribed (renewal reminder) | `STR-12PM-02` |
-| Parent (two children) | `P-ASLAM` |
-| Staff | `T01` |
-| Principal | `principal` |
-| Admin | `admin` |
+- **Before Firebase is connected** the portals run on the demo school automatically.
+- **After Firebase is connected** open **`/portal/?demo=1`** (e.g. `starscollege.online/portal/?demo=1`). The demo is kept in that browser only and never touches the real database. **Exit demo** (top of every page) or `/portal/?demo=0` goes back to the real portals.
+- **Reset demo data** restores the sample school after you've clicked around.
 
-"Reset demo data" (top of every portal) restores the sample school.
+| To show… | Sign in as | ID |
+|---|---|---|
+| Student dashboard, attendance, results, timetable, homework | Student | `STR-12PM-02` (Ayesha Aslam — top student) |
+| Rs. 200 EasyPaisa payment screen, incomplete ID card checklist | Student | `STR-9B-01` (Hamza Aslam) |
+| Renewal reminder (subscription ends in 3 days) | Student | `STR-12PM-02` |
+| Expired subscription + rejected payment, unpaid fees, weak attendance and results | Student | `STR-10B-04` |
+| Issued student ID card, print, QR code | Student | `STR-11PM-01` (any 11/12 Pre-Medical student) |
+| Parent with 3 children (switch child), messages to teachers, leave | Parent | `P-RAZA` |
+| Parent with 2 children, teacher replies | Parent | `P-ASLAM` |
+| Any other parent | Parent | `P-` + student code, e.g. `P-8-02` for `STR-8-02` |
+| Class teacher: dashboard, approve student leave, parent messages, employee card | Staff | `T01` (Physics, 12 Pre-Eng) |
+| Today's attendance not marked yet | Staff | `T08` (12 ICS) |
+| Subject teacher (not a class teacher), employee card not issued | Staff | `T16` (English, Class 8) |
+| College overview, staff leave approvals, publish Mid-Term results, fee collection | Principal | `principal` |
+| Students/staff lists, card status, 6 payments to verify, fees, timetables, 2 students who left | Admin | `admin` |
+
+Student IDs: `STR-<class>-<roll>` — class codes `8, 9B, 9C, 10B, 10C, 11PM, 11PE, 11CS, 11CM, 12PM, 12PE, 12CS, 12CM` (B = Biology, C = Computer, PM = Pre-Medical, PE = Pre-Engineering, CS = ICS, CM = I.Com). Staff IDs `T01` – `T20`.
+
+ID card QR codes in the demo verify on `verify.html` in the same browser only (the codes aren't in the real database).
 
 ## Going live with Firebase
 

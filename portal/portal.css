@@ -44,6 +44,10 @@ body.portal { background: var(--paper); font-size: 1rem; }
 .demo-box { background: var(--gold-soft); border: 1px solid #F3D98C; border-radius: 12px; padding: 12px 14px; font-size: .93rem; }
 .demo-box strong { color: var(--navy); }
 .demo-box .linkbtn { font-size: .93rem; }
+.demo-list { list-style: none; margin: 8px 0 6px; padding: 0; display: grid; gap: 6px; }
+.demo-list li { display: flex; gap: 8px; align-items: baseline; line-height: 1.35; }
+.demo-list .linkbtn { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .86rem; white-space: nowrap; }
+.demo-list span { color: #5b4a1a; font-size: .86rem; }
 
 /* ---------- App shell ---------- */
 .shell { display: grid; grid-template-columns: 256px 1fr; min-height: 100vh; }

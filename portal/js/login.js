@@ -9,12 +9,26 @@ const LABELS = {
   principal: ["Principal ID", "principal"],
   admin: ["Admin ID", "admin"]
 };
+/* demo logins, each showing off a different feature (password is always demo123) */
 const DEMO = {
-  student: ["STR-9B-01", "Hamza Aslam, Class 9 (Biology)"],
-  parent: ["P-ASLAM", "Muhammad Aslam — father of two students"],
-  staff: ["T01", "Prof. Tariq Mehmood, Physics"],
-  principal: ["principal", "Prof. Dr. Khalid Mahmood"],
-  admin: ["admin", "College office"]
+  student: [
+    ["STR-9B-01", "Hamza Aslam, 9 Bio — not subscribed yet (payment screen), ID card incomplete"],
+    ["STR-12PM-02", "Ayesha Aslam, 12 Pre-Med — top student, renewal reminder"],
+    ["STR-11PM-01", "Class 11 Pre-Med — ID card issued (print + QR)"],
+    ["STR-10B-04", "10 Bio — subscription expired, fee unpaid"]
+  ],
+  parent: [
+    ["P-ASLAM", "Muhammad Aslam — two children, messages with teachers"],
+    ["P-RAZA", "Raja Khalid Raza — three children in 8, 10 and 12"],
+    ["P-8-02", "Parent of one Class 8 student"]
+  ],
+  staff: [
+    ["T01", "Prof. Tariq Mehmood — Physics, class teacher 12 Pre-Eng"],
+    ["T08", "Mr. Adeel Raza — Computer Science, 12 ICS (attendance to mark)"],
+    ["T16", "Ms. Uzma Parveen — English, Class 8 (subject teacher)"]
+  ],
+  principal: [["principal", "Prof. Dr. Khalid Mahmood — approvals, results, fee collection"]],
+  admin: [["admin", "College office — students, staff, fees, subscriptions, ID cards"]]
 };
 
 const form = $("#login");
@@ -30,9 +44,12 @@ function syncRole() {
   $("#uid-label").textContent = label; $("#uid").placeholder = ph;
   try { localStorage.setItem("stars_portal_lastrole", role()); } catch {}
   if (!store.IS_LIVE) {
-    const [id, who] = DEMO[role()];
-    $("#demo").innerHTML = `<div class="demo-box"><strong>Demo mode.</strong> Try the ${LABELS[role()][0].split(" ")[0].toLowerCase()} portal as ${who}: ID <strong>${id}</strong>, password <strong>${store.DEMO_PASSWORD}</strong>. <button type="button" class="linkbtn" id="fill">Fill it in for me</button></div>`;
-    $("#fill").onclick = () => { $("#uid").value = id; $("#pw").value = store.DEMO_PASSWORD; form.requestSubmit(); };
+    const list = DEMO[role()];
+    $("#demo").innerHTML = `<div class="demo-box"><strong>Demo school${store.DEMO_FORCED ? "" : " mode"}.</strong> 124 students, their parents and 20 staff. Password for every demo login: <strong>${store.DEMO_PASSWORD}</strong>.
+      <ul class="demo-list">${list.map(([id, who]) => `<li><button type="button" class="linkbtn" data-demo="${id}">${id}</button> <span>${who}</span></li>`).join("")}</ul>
+      ${store.DEMO_FORCED ? `<button type="button" class="linkbtn" id="exit-demo">Exit demo — back to the real portal</button>` : ""}</div>`;
+    $$("[data-demo]").forEach((b) => (b.onclick = () => { $("#uid").value = b.dataset.demo; $("#pw").value = store.DEMO_PASSWORD; form.requestSubmit(); }));
+    if ($("#exit-demo")) $("#exit-demo").onclick = () => { store.exitDemo(); location.replace("index.html"); };
   }
 }
 try { const r = localStorage.getItem("stars_portal_lastrole"); if (r && LABELS[r]) form.querySelector(`[value="${r}"]`).checked = true; } catch {}

@@ -80,8 +80,9 @@ async function start() {
   $("#me").innerHTML = `<span class="me__text"><b>${esc(user.name)}</b><span>${esc(ROLES[user.role].label)}${user.loginId ? " · " + esc(user.loginId) : ""}</span></span>${avatar(user.name, user.role === "principal" || user.role === "admin" ? "avatar--gold" : "")}`;
   $("#me").setAttribute("aria-label", "My profile");
   if (!store.IS_LIVE) {
-    $("#demo-strip").innerHTML = `<div class="demo-strip">Demo mode — sample data saved in this browser only. <button class="linkbtn" id="reset">Reset demo data</button></div>`;
+    $("#demo-strip").innerHTML = `<div class="demo-strip">Demo school — sample data saved in this browser only. <button class="linkbtn" id="reset">Reset demo data</button>${store.DEMO_FORCED ? ` · <button class="linkbtn" id="exit-demo">Exit demo</button>` : ""}</div>`;
     $("#reset").onclick = () => { store.resetDemo(); location.replace("index.html"); };
+    if ($("#exit-demo")) $("#exit-demo").onclick = () => { store.exitDemo(); location.replace("index.html"); };
   }
   buildNav();
   $("#menu-btn").onclick = () => setMenu(true);
