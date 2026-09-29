@@ -10,7 +10,7 @@ Five portals share one sign-in page at **`/portal/`**:
 | **Principal** | principal | College overview, attendance by class, staff attendance, publish results, fee collection, staff leave approvals, notices |
 | **Admin** | college office | Add/edit students & staff (creates their logins), reset passwords, generate challans & record fees, edit timetables, notices, link to the website CMS |
 
-Built by Ijaz Software House · www.ijazs.online
+Built by Ijaz Software House · 0092-344-0807888 / 0092-316-9334525 · www.ijazs.online
 
 ## Demo school (for showing every feature)
 
